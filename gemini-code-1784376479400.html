@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewportTag">
+    <title>Ретромаркет — Неофициальный магазин приложений</title>
+    <style>
+        /* Base variables for themes */
+        :root {
+            --bg-color: #1a1a1a;
+            --card-bg: #222;
+            --primary-color: #00ff00;
+            --primary-hover: #00cc00;
+            --text-main: #00ff00;
+            --text-muted: #888;
+            --text-desc: #aaa;
+            --shadow-color: rgba(0, 255, 0, 0.4);
+            --anim-speed: 0.2s;
+            --shadow-effect: 0 0 15px var(--shadow-color);
+            --logo-filter: drop-shadow(0 0 8px var(--shadow-color));
+        }
+
+        /* Amber theme */
+        [data-theme="amber"] {
+            --primary-color: #ffb000;
+            --primary-hover: #cc8c00;
+            --text-main: #ffb000;
+            --shadow-color: rgba(255, 176, 0, 0.4);
+            --logo-filter: hue-rotate(95deg) saturate(2) brightness(1.2) drop-shadow(0 0 8px var(--shadow-color));
+        }
+
+        /* Performance mode (no animations) */
+        [data-animations="none"] {
+            --anim-speed: 0s !important;
+            --shadow-effect: none !important;
+            --logo-filter: none !important;
+        }
+
+        /* РЕЖИМ ПК (Имитация десктопа на мобилках) */
+        body.pc-version-active {
+            min-width: 1200px !important;
+            overflow-x: auto !important;
+        }
+        body.pc-version-active .header-buttons {
+            position: absolute !important;
+            top: 0 !important;
+            right: 10px !important;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px;
+            transition: color var(--anim-speed), background-color var(--anim-speed);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 3px double var(--primary-color);
+            padding-bottom: 25px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .store-logo {
+            width: 50px;
+            height: auto;
+            object-fit: contain;
+            filter: var(--logo-filter);
+            transition: filter var(--anim-speed);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        [data-animations="none"] header h1 {
+            text-shadow: none !important;
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+
+        .tg-channel-btn {
+            display: inline-flex;
+            align-items: center;
+            background-color: #0088cc;
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 0.9rem;
+            box-shadow: 0 0 10px rgba(0, 136, 204, 0.4);
+            transition: background-color var(--anim-speed), transform var(--anim-speed);
+        }
+
+        .tg-channel-btn:hover {
+            background-color: #0077b3;
+            transform: scale(1.05);
+        }
+
+        .tg-channel-btn::before {
+            content: "✈ ";
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .header-buttons {
+            position: absolute;
+            top: 0;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .settings-btn, .auth-btn, .version-toggle-btn {
+            background: none;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            padding: 5px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all var(--anim-speed);
+            font-weight: bold;
+        }
+
+        .settings-btn:hover, .auth-btn:hover, .version-toggle-btn:hover {
+            background-color: var(--primary-color);
+            color: #000;
+            box-shadow: var(--shadow-effect);
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+            text-align: center;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            background-color: var(--card-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 4px;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            font-family: 'Courier New', Courier, monospace;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.2);
+            transition: border-color var(--anim-speed), box-shadow var(--anim-speed);
+        }
+
+        .search-input::placeholder {
+            color: #555;
+        }
+
+        .search-input:focus {
+            box-shadow: var(--shadow-effect);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .container.grid-large {
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        }
+
+        .container.grid-compact {
+            grid-template-columns: 1fr;
+        }
+
+        .app-card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform var(--anim-speed), box-shadow var(--anim-speed), border-color var(--anim-speed);
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-effect);
+        }
+
+        .container.grid-compact .app-card {
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
+            padding: 12px 20px;
+        }
+
+        .container.grid-compact .app-card:hover {
+            transform: translateX(5px);
+        }
+
+        .container.grid-compact .app-card > div:first-child {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-grow: 1;
+        }
+
+        .app-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-icon img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        .container.grid-compact .app-icon {
+            font-size: 2rem;
+            margin-bottom: 0;
+            min-width: 40px;
+        }
+
+        .container.grid-compact .app-icon img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+
+        .container.grid-compact .app-title {
+            font-size: 1.2rem;
+            margin-bottom: 0;
+            text-align: left;
+            min-width: 200px;
+        }
+
+        .container.grid-compact .app-desc {
+            font-size: 0.85rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .container.grid-compact .download-btn {
+            min-width: 140px;
+            padding: 8px;
+        }
+
+        .app-title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #fff;
+            word-break: break-word;
+            font-weight: bold;
+        }
+
+        .app-desc {
+            font-size: 0.9rem;
+            color: var(--text-desc);
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        /* Метка версии Android в карточке */
+        .android-version-badge {
+            display: block;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #00ffff;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        [data-theme="amber"] .android-version-badge {
+            color: #ffaa00;
+        }
+
+        .container.grid-compact .android-version-badge {
+            display: inline-block;
+            margin-bottom: 0;
+            margin-left: 15px;
+            font-size: 0.8rem;
+        }
+
+        .download-btn {
+            display: block;
+            text-align: center;
+            background-color: var(--primary-color);
+            color: #000;
+            padding: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 4px;
+            transition: background-color var(--anim-speed), color var(--anim-speed);
+        }
+
+        .download-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #222;
+            border: 3px double var(--primary-color);
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 0 20px var(--shadow-color);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 1px dashed var(--primary-color);
+            padding-bottom: 10px;
+            color: #fff;
+        }
+
+        .settings-grid, .auth-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .setting-item, .form-item {
+            margin-bottom: 15px;
+        }
+
+        .setting-item.full-width, .form-item.full-width {
+            grid-column: span 2;
+        }
+
+        .setting-item label, .form-item label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .setting-item select, .form-item input {
+            width: 100%;
+            padding: 8px;
+            background-color: #1a1a1a;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            font-family: inherit;
+            outline: none;
+        }
+
+        .form-item input:focus {
+            box-shadow: 0 0 5px var(--primary-color);
+        }
+
+        .close-modal-btn, .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: #000;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .close-modal-btn:hover, .submit-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .send-code-btn {
+            background-color: transparent;
+            border: 1px dashed var(--primary-color);
+            color: var(--primary-color);
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 5px;
+            transition: all var(--anim-speed);
+        }
+        .send-code-btn:hover {
+            background-color: var(--primary-color);
+            color: #000;
+        }
+
+        .code-hint {
+            font-size: 0.8rem;
+            color: #ffff00;
+            text-align: center;
+            margin-top: 8px;
+            display: none;
+            border: 1px dashed #ffff00;
+            padding: 5px;
+        }
+
+        .switch-auth-mode {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .switch-auth-mode span {
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .error-msg {
+            color: #ff3333;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Мобильные адаптивные стили (отключаются в режиме ПК) */
+        @media (max-width: 768px) {
+            body:not(.pc-version-active) header {
+                padding-top: 50px;
+            }
+            body:not(.pc-version-active) .header-buttons {
+                position: static;
+                justify-content: center;
+                margin-top: 15px;
+                width: 100%;
+            }
+            body:not(.pc-version-active) .brand-container h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-container">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQz6fAsh3I9YhvOllnN9QYamKywGWq29LDmAipBgTwA3A&s=10" alt="Ретромаркет Лого" class="store-logo">
+            <h1>Ретромаркет</h1>
+        </div>
+        <p>Каталог старых добрых APK-файлов и игр</p>
+        <a href="https://t.me/retromarke" target="_blank" class="tg-channel-btn">Наш Telegram-канал</a>
+        
+        <div class="header-buttons">
+            <button class="version-toggle-btn" id="versionToggleBtn">🖥️ Версия для ПК</button>
+            <button class="auth-btn" id="authBtn">👤 Войти</button>
+            <button class="settings-btn" id="openSettingsBtn">⚙</button>
+        </div>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Введите название приложения или игры...">
+    </div>
+
+    <div class="container" id="appsContainer">
+
+        <!-- НОВАЯ КАРТОЧКА: РОБИ (ГОВОРЯЩИЙ РОБОТ) -->
+        <div class="app-card" data-type="game" data-android="2.2">
+            <div>
+                <div class="app-icon">
+                    <img src="https://static.wikia.nocookie.net/talkingtomfriends/images/4/46/Roby.webp/revision/latest?cb=20260109054150&path-prefix=ru" alt="Roby Logo">
+                </div>
+                <div class="app-title">Говорящий Роби</div>
+                <div class="app-desc">Уникальный интерактивный робот прямо в вашем телефоне. Разговаривайте с ним, и он повторит ваши слова своим футуристичным электронным голосом, танцуйте вместе под музыку и меняйте его настройки на панели управления!</div>
+                <span class="android-version-badge">🤖 Android 2.2+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1IF2iYIgaitn5tqmRqNkE9pPgmukdJcXL/view?usp=drivesdk" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА КРОКОДИЛЬЧИК СВОМПИ -->
+        <div class="app-card" data-type="game" data-android="2.1">
+            <div>
+                <div class="app-icon">
+                    <img src="https://static.wikia.nocookie.net/wheresmywater/images/6/6e/%D0%9A%D1%80%D0%BE%D0%BA%D0%BE%D0%B4%D0%B8%D0%BB%D1%8C%D1%87%D0%B8%D0%BA_%D0%A1%D0%B2%D0%BE%D0%BC%D0%BF%D0%B8_%28%D0%BB%D0%BE%D0%B3%D0%BE_4%29.png/revision/latest?cb=20240929095638&path-prefix=ru" alt="Swampy Logo">
+                </div>
+                <div class="app-title">Крокодильчик Свомпи</div>
+                <div class="app-desc">Помогите дружелюбному аллигатору Свомпи принять расслабляющую ванну! Прокладывайте путь воде через толщу земли, обходите ловушки, очищайте токсичную слизь и собирайте резиновых уточек.</div>
+                <span class="android-version-badge">🤖 Android 2.1+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1Ntmy_GimQ2bEzII8IypEsE_ri7ajJEMy/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА FIVE NIGHTS AT FREDDY'S -->
+        <div class="app-card" data-type="game" data-android="2.3">
+            <div>
+                <div class="app-icon">
+                    <img src="https://static.wikia.nocookie.net/five-nights-at-freddys-rus/images/c/c3/21431414.jpg/revision/latest/scale-to-width/360?cb=20240708071120&path-prefix=ru" alt="FNAF Logo">
+                </div>
+                <div class="app-title">Five Nights at Freddy's</div>
+                <div class="app-desc">Выдержите пять ночей в качестве ночного охранника в пиццерии Фредди Фазбера. Следите за камерами, экономьте энергию и не дайте жутким аниматроникам добраться до вас!</div>
+                <span class="android-version-badge">🤖 Android 2.3+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/12sCzh3k4RJPHwu2tJaOnXyZlwqp0_0-J/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА FIVE NIGHTS AT FREDDY'S 2 -->
+        <div class="app-card" data-type="game" data-android="2.3">
+            <div>
+                <div class="app-icon">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWjHOAnvDCOMoLyfeY__XLzCTizlTGUHw740z-OrFdwg&s=10" alt="FNAF 2 Logo">
+                </div>
+                <div class="app-title">Five Nights at Freddy's 2</div>
+                <div class="app-desc">Добро пожаловать обратно в обновленную пиццерию! К старым аниматроникам присоединились новые друзья. У вас больше нет дверей — только маска Фредди для маскировки и старый фонарик. Выдержите ли вы еще 5 ночей?</div>
+                <span class="android-version-badge">🤖 Android 2.3+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/12sCzh3k4RJPHwu2tJaOnXyZlwqp0_0-J/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА FIVE NIGHTS AT FREDDY'S 3 -->
+        <div class="app-card" data-type="game" data-android="2.3">
+            <div>
+                <div class="app-icon">
+                    <img src="https://upload.wikimedia.org/wikipedia/ru/f/f2/Five_nights_at_freddy%27s_3_logo.png" alt="FNAF 3 Logo">
+                </div>
+                <div class="app-title">Five Nights at Freddy's 3</div>
+                <div class="app-desc">Прошло 30 лет с момента закрытия пиццерии. Бывшие владельцы решили открыть «Ужасы Фазбера: Аттракцион страха». Из оригинальных аниматроников остался невредим только один — Спрингтрап. Смонете ли вы пережить его атаки и призрачные галлюцинации?</div>
+                <span class="android-version-badge">🤖 Android 2.3+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1UZdgJhbM3v-206t7-jkhTNjnsJKT9nFT/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА FRUIT NINJA -->
+        <div class="app-card" data-type="game" data-android="2.1">
+            <div>
+                <div class="app-icon">
+                    <img src="https://irecommend.ru/sites/default/files/product-images/17372/fruit-ninja.png" alt="Fruit Ninja Logo">
+                </div>
+                <div class="app-title">Fruit Ninja</div>
+                <div class="app-desc">Легендарная аркада, где ваш палец превращается в острую катану! Нарезайте сочные фрукты, делайте комбо и берегитесь бомб.</div>
+                <span class="android-version-badge">🤖 Android 2.1+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1_raJEEhVyfJjcpRo5kcQLr8qFbwDfdUC/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА BALDI'S BASICS -->
+        <div class="app-card" data-type="game" data-android="4.1">
+            <div>
+                <div class="app-icon">
+                    <img src="https://irecommend.ru/sites/default/files/product-images/17372/fruit-ninja.png" alt="Baldi's Basics Logo">
+                </div>
+                <div class="app-title">Baldi's Basics</div>
+                <div class="app-desc">Хоррор-пародия на обучающие игры из 90-х. Решайте математические задачки в блокнотах и попробуйте сбежать из школы от сердитого Балди!</div>
+                <span class="android-version-badge">🤖 Android 4.1+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/10wvS41P4e_J3ubUZ-USbUbIaLZU0zJH0/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА PLANTS VS ZOMBIES -->
+        <div class="app-card" data-type="game" data-android="1.5">
+            <div>
+                <div class="app-icon">
+                    <img src="https://static.wikia.nocookie.net/plantsvs-zombies/images/f/ff/Plantsvs.ZombiesFREEicon.png/revision/latest/scale-to-width-down/250?cb=20180709215000&path-prefix=ru" alt="Plants vs. Zombies Logo">
+                </div>
+                <div class="app-title">Plants vs. Zombies</div>
+                <div class="app-desc">Классическая игра в жанре Tower Defense. Выращивайте армию боевых растений на своем газоне, чтобы отбить атаку забавных зомби.</div>
+                <span class="android-version-badge">🤖 Android 1.5+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1Zp720umUKVA2Qs43sm2SRbWTv5cUOhfI/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА DELTARUNE -->
+        <div class="app-card" data-type="game" data-android="5.0">
+            <div>
+                <div class="app-icon">
+                    <img src="https://static.wikia.nocookie.net/undertale/images/c/c5/Deltarune_Wiki_logo.png/revision/latest?cb=20251010190609&path-prefix=ru" alt="Deltarune Logo">
+                </div>
+                <div class="app-title">Deltarune</div>
+                <div class="app-desc">Долгожданное продолжение (и альтернативная история) вселенной Undertale от Тоби Фокса. Отправляйтесь в Тёмный мир вместе с Крис и Сьюзи, заводите неожиданных друзей и спасайте баланс света и тьмы!</div>
+                <span class="android-version-badge">🤖 Android 5.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1Z1ZshvHBq50QTKFz_x7REQ-2gBDCP33Q/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА UNDERTALE -->
+        <div class="app-card" data-type="game" data-android="4.0">
+            <div>
+                <div class="app-icon">
+                    <img src="https://images.steamusercontent.com/ugc/2458482893428270738/BD09284096C70B1D0D86E632D9066DE494E4857E/" alt="Undertale Logo">
+                </div>
+                <div class="app-title">Undertale</div>
+                <div class="app-desc">Культовая ролевая игра, в которой не обязательно никого убивать. Управляйте упавшим в Подземелье человеком и выбирайте свой путь — пацифиста или геноцида.</div>
+                <span class="android-version-badge">🤖 Android 4.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1awkAeUfS1U8GKlypd_oUeDV3Ydh88Uds/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА АНДЖЕЛА -->
+        <div class="app-card" data-type="game" data-android="4.1">
+            <div>
+                <div class="app-icon">
+                    <img src="https://static.wikia.nocookie.net/talkingtomfriends/images/e/e0/MTA_icon.jpg/revision/latest?cb=20161210154523&path-prefix=ru" alt="My Talking Angela Logo">
+                </div>
+                <div class="app-title">Моя говорящая Анжела</div>
+                <div class="app-desc">Популярный виртуальный питомец. Воспитывайте Анжелу, выбирайте для неё стильные наряды и делайте прически!</div>
+                <span class="android-version-badge">🤖 Android 4.1+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1KzIn7KznK_zjjgRpiu2DHfHZdwyrQo5x/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА БЕН -->
+        <div class="app-card" data-type="game" data-android="4.4">
+            <div>
+                <div class="app-icon">
+                    <img src="https://static.wikia.nocookie.net/talkingtomfriends/images/7/71/TBD6.webp/revision/latest?cb=20260410135540&path-prefix=ru" alt="Talking Ben Logo">
+                </div>
+                <div class="app-title">Говорящий Бен</div>
+                <div class="app-desc">Интерактивный пес-профессор на пенсии. Проводите химические опыты в лаборатории и общайтесь с Беном по телефону!</div>
+                <span class="android-version-badge">🤖 Android 4.4+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1KdU94HePBlg7fL2-4HK0INYneZCgoXDP/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА ГОВОРЯЩИЙ ТОМ -->
+        <div class="app-card" data-type="game" data-android="2.1">
+            <div>
+                <div class="app-icon">
+                    <img src="https://static.wikia.nocookie.net/talkingtomfriends/images/2/27/Tom2010FreeNew.webp/revision/latest/scale-to-width/360?cb=20251208154451&path-prefix=ru" alt="Talking Tom 2010 Logo">
+                </div>
+                <div class="app-title">Говорящий Том</div>
+                <div class="app-desc">Классическая версия любимого симулятора питомца. Разговаривайте с Томом, кормите его и играйте в мини-игры.</div>
+                <span class="android-version-badge">🤖 Android 2.1+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1IqrFoJ4ce7xdcdTtnt7LECZJd8V52V8s/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА ГОВОРЯЩИЙ РЕКС -->
+        <div class="app-card" data-type="game" data-android="2.2">
+            <div>
+                <div class="app-icon">
+                    <img src="https://static.wikia.nocookie.net/talkingtomfriends/images/d/de/Mzi.awdqjbwm.webp/revision/latest?cb=20260220023630&path-prefix=ru" alt="Talking Rex Logo">
+                </div>
+                <div class="app-title">Говорящий Рекс</div>
+                <div class="app-desc">Интерактивный и мощный тираннозавр Рекс прямо в вашем телефоне! Разговаривайте с ним, чтобы услышать его грозный, но забавный голос, кормите его стейками и заставляйте крушить всё вокруг.</div>
+                <span class="android-version-badge">🤖 Android 2.2+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1Ag-o8QDUh0_AC7_KLKQsKDMNPvJxJeKZ/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА ПОЛЕ ЧУДЕС 2015 -->
+        <div class="app-card" data-type="game" data-android="4.0">
+            <div>
+                <div class="app-icon">
+                    <img src="https://cl.softonic.com/favicon.ico" alt="Поле Чудес 2015">
+                </div>
+                <div class="app-title">Поле Чудес 2015</div>
+                <div class="app-desc">Знаменитая мобильная викторина по мотивам популярного телешоу. Крутите барабан, угадывайте буквы и слова, забирайте призы и соревнуйтесь с виртуальными соперниками в остроумии!</div>
+                <span class="android-version-badge">🤖 Android 4.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1Ag-o8QDUh0_AC7_KLKQsKDMNPvJxJeKZ/view?usp=drivesdk" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА ПТИЦА -->
+        <div class="app-card" data-type="game" data-android="2.2">
+            <div>
+                <div class="app-icon">
+                    <img src="https://static.wikia.nocookie.net/talkingtomfriends/images/1/12/Talking_Larry_2010_Icon.png/revision/latest?cb=20251008001852&path-prefix=ru" alt="Talking Larry Logo">
+                </div>
+                <div class="app-title">Говорящая птица</div>
+                <div class="app-desc">Веселый и забавный говорящий попугай, готовый повторять за вами любые фразы своим уникальным голосом.</div>
+                <span class="android-version-badge">🤖 Android 2.2+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1W71CLDVPNwCj2bvGfkVCqO5jr238G7O_/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА 4PDA -->
+        <div class="app-card" data-type="app" data-android="4.0">
+            <div>
+                <div class="app-icon">
+                    <img src="https://4pda.to/favicon.ico" alt="4PDA Logo">
+                </div>
+                <div class="app-title">4PDA</div>
+                <div class="app-desc">Мобильный client форума о технике, программах и кастомных прошивках.</div>
+                <span class="android-version-badge">🤖 Android 4.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1Nlz85S3F2RetJJly54UXMoprQzDv6i14/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА МАЙНКРАФТ PE 0.8.1 -->
+        <div class="app-card" data-type="game" data-android="2.3">
+            <div>
+                <div class="app-icon">
+                    <img src="https://i0.wp.com/epicdroid.com/wp-content/uploads/2015/09/1aeT2lbV.png?ssl=1" alt="Minecraft 0.8.1 Logo">
+                </div>
+                <div class="app-title">Майнкрафт PE 0.8.1</div>
+                <div class="app-desc">Легендарная старая версия карманного издания Майнкрафта. Ностальгия в чистом виде!</div>
+                <span class="android-version-badge">🤖 Android 2.3+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1ITIhr3KFA8qOkjZoL8UnjQdEjSvrrMhQ/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА HITDROID -->
+        <div class="app-card" data-type="game" data-android="2.2">
+            <div>
+                <div class="app-icon">
+                    <img src="https://lh3.googleusercontent.com/COg_G41qR8pWzSgAksQO593O7W_i_z-pL-A68D6R29606C7f-l-JvSgA7O-8R29606C=w240-h480-rw" alt="HitDroid Logo">
+                </div>
+                <div class="app-title">HitDroid</div>
+                <div class="app-desc">Классическое ретро-приложение / игра для Android-устройств. Версия 1.0.2.</div>
+                <span class="android-version-badge">🤖 Android 2.2+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1zz1RLJXQEU33R--HGumk2IEG4GRtkUiC/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА ONESHOT -->
+        <div class="app-card" data-type="game" data-android="4.4">
+            <div>
+                <div class="app-icon">
+                    <img src="https://static.wikia.nocookie.net/oneshot/images/5/52/Niko_with_lightbulb.png" alt="OneShot Niko Logo">
+                </div>
+                <div class="app-title">OneShot</div>
+                <div class="app-desc">Уникальное приключение со своей неповторимой атмосферой. Android-версия известной инди-игры.</div>
+                <span class="android-version-badge">🤖 Android 4.4+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1ZikzGvLF6qgkkNTLNMmbz1xjX9dF-Om_/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА OPERA MINI -->
+        <div class="app-card" data-type="app" data-android="1.5">
+            <div>
+                <div class="app-icon">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/Opera_Mini_2015_icon.svg" alt="Opera Mini Logo">
+                </div>
+                <div class="app-title">Opera Mini</div>
+                <div class="app-desc">Тот самый классический быстрый мобильный браузер со встроенным сжатием трафика для экономии интернета.</div>
+                <span class="android-version-badge">🤖 Android 1.5+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1PDjeK-_3SQTVa7rVnpzLOEiFGsrbjOms/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА TIKTOK GO -->
+        <div class="app-card" data-type="app" data-android="4.1">
+            <div>
+                <div class="app-icon">
+                    <img src="https://appstoandroid.com/wp-content/uploads/2021/12/%D8%AA%D8%AF%D9%82%D9%84-%D8%AA%D9%8Application-%D8%AA%D9%88%D9%83-%D9%84%D8%A7%D9%8Application-%D8%A7%D8%A显示-%D8%A7%D8%B5%D8%AF%D8%A7%D8%B1-2022.webp" alt="TikTok Go Logo">
+                </div>
+                <div class="app-title">TikTok Go</div>
+                <div class="app-desc">Облегченная версия приложения для просмотра коротких видео. Отлично работает на слабых смартфонах.</div>
+                <span class="android-version-badge">🤖 Android 4.1+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1uqEvPoD0bc7XN19hvPVsRe7pPz9e5Y91/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА МАЙНКРАФТ PE 1.5.1 -->
+        <div class="app-card" data-type="game" data-android="4.2">
+            <div>
+                <div class="app-icon">
+                    <img src="https://irecommend.ru/sites/default/files/imagecache/copyright1/user-images/3243335/0tKtfReDGSjXZRcS5z5GZQ.jpg" alt="Minecraft 1.5.1 Logo">
+                </div>
+                <div class="app-title">Майнкрафт PE 1.5.1</div>
+                <div class="app-desc">Знаменитое «Морское обновление» (Update Aquatic). Кораллы, дельфины, трезубцы и новые приключения в кубическом мире!</div>
+                <span class="android-version-badge">🤖 Android 4.2+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1RdoJGED-CP0o3yU9GXQKs3hDcx7XUS8Z/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА SUBWAY SURFERS -->
+        <div class="app-card" data-type="game" data-android="2.3">
+            <div>
+                <div class="app-icon">
+                    <img src="https://irecommend.ru/sites/default/files/product-images/103115/subway-surfers.jpg" alt="Subway Surfers Logo">
+                </div>
+                <div class="app-title">Subway Surfers</div>
+                <div class="app-desc">Один из самых популярных бесконечных раннеров в истории мобильных игр. Беги, уворачивайся от поездов и собирай монеты!</div>
+                <span class="android-version-badge">🤖 Android 2.3+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/13Dv1q6RDg7QXRxWwtPMDqZ6xSt0h0chc/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА FLAPPY BIRD -->
+        <div class="app-card" data-type="game" data-android="2.2">
+            <div>
+                <div class="app-icon">
+                    <img src="https://upload.wikimedia.org/wikipedia/ru/0/0a/Flappy_Bird_logo.jpeg" alt="Flappy Bird Logo">
+                </div>
+                <div class="app-title">Flappy Bird</div>
+                <div class="app-desc">Сверхпопулярная и невероятно сложная аркада про летящую птичку. Проверь свои нервы на прочность!</div>
+                <span class="android-version-badge">🤖 Android 2.2+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/111z2I9gbV4V4XRZIQ3FseXUHDbTtN1f6/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="app" data-android="4.0">
+            <div>
+                <div class="app-icon">📊</div>
+                <div class="app-title">AnTuTu Benchmark</div>
+                <div class="app-desc">Классическая версия популярного теста производительности. Идеально подходит для проверки мощностей старых Android-устройств.</div>
+                <span class="android-version-badge">🤖 Android 4.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1_H2_obifTcIN6zuhhcVNN_chYuyZfgJ8/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="app" data-android="5.0">
+            <div>
+                <div class="app-icon">❤️</div>
+                <div class="app-title">Яндекс (Бета)</div>
+                <div class="app-desc">Бета-версия приложения Яндекс для тестирования новых функций поиска и умных сервисов.</div>
+                <span class="android-version-badge">🤖 Android 5.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1zX5O0B9nxNdEnbiXwpJpYJoR30Uzht3X/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="app" data-android="5.0">
+            <div>
+                <div class="app-icon">🦊</div>
+                <div class="app-title">Firefox</div>
+                <div class="app-desc">Надежный, быстрый веб-браузер от Mozilla с поддержкой расширений.</div>
+                <span class="android-version-badge">🤖 Android 5.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1so7u0agwyjlGPTRLOPxqJ6-RglY67m9i/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="app" data-android="4.4">
+            <div>
+                <div class="app-icon">📺</div>
+                <div class="app-title">notPipe</div>
+                <div class="app-desc">Удобный альтернативный легковесный клиент для просмотра видео без лишней рекламы и нагрузок.</div>
+                <span class="android-version-badge">🤖 Android 4.4+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1VYhO4Z3QuqM7fMrjDvEGxqKWB_YT1LBv/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА OPERA MOBILE -->
+        <div class="app-card" data-type="app" data-android="4.0">
+            <div>
+                <div class="app-icon">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/49/Opera_2015_icon.svg" alt="Opera Mobile Logo">
+                </div>
+                <div class="app-title">Opera Mobile</div>
+                <div class="app-desc">Полнофункциональная версия знаменитого браузера Opera с продвинутыми инструментами навигации.</div>
+                <span class="android-version-badge">🤖 Android 4.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1bKFCdLTdi3NMXuJIMlnTDsg8ARnX1Q-I/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА DOODLE JUMP -->
+        <div class="app-card" data-type="game" data-android="1.6">
+            <div>
+                <div class="app-icon">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Doodle_Jump.png" alt="Doodle Jump Logo">
+                </div>
+                <div class="app-title">Doodle Jump</div>
+                <div class="app-desc">Знаменитая прыгалка с уникальным рисованным стилем. Прыгай по платформам всё выше и выше, уворачиваясь от монстров!</div>
+                <span class="android-version-badge">🤖 Android 1.6+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1FkSwsB1m2xF41gB8HUHustYU3drzk5pH/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="game" data-android="2.1">
+            <div>
+                <div class="app-icon">🐸</div>
+                <div class="app-title">Cut the Rope</div>
+                <div class="app-desc">Увлекательная головоломка, где нужно разрезать веревки, собирать звезды и кормить леденцами забавного зеленого монстрика Ом Няма.</div>
+                <span class="android-version-badge">🤖 Android 2.1+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1Tu6zDoWtjMSx2nPm6jTNShJQGn3QDogc/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА ANGRY BIRDS RIO -->
+        <div class="app-card" data-type="game" data-android="2.2">
+            <div>
+                <div class="app-icon">
+                    <img src="https://static.wikia.nocookie.net/angrybirds/images/d/df/Rio_icon.png/revision/latest?cb=20161022135641" alt="Angry Birds Rio Logo">
+                </div>
+                <div class="app-title">Angry Birds Rio</div>
+                <div class="app-desc">Специальное издание злых птичек, созданное по мотивам популярного мультфильма «Рио». Освобождай редких птиц из клеток в Рио-де-Жанейро!</div>
+                <span class="android-version-badge">🤖 Android 2.2+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1RaIB8jn-zgzuHRm3hJLAKD_U79ODwdCU/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="game" data-android="1.6">
+            <div>
+                <div class="app-icon">🦅</div>
+                <div class="app-title">Angry Birds</div>
+                <div class="app-desc">Классическая версия культовой игры, с которой началась целая эпоха. Запускай злых птиц из рогатки, чтобы разрушить укрепления коварных свиней!</div>
+                <span class="android-version-badge">🤖 Android 1.6+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1Mk11e7Fz5-Ja4SmuwNaAWGhAMnB3LIXJ/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="app" data-android="4.4">
+            <div>
+                <div class="app-icon">🤖</div>
+                <div class="app-title">TikTok (Бета)</div>
+                <div class="app-desc">Экспериментальная тестовая сборка для оценки новых алгоритмов рекомендаций и инструментов создания коротких видеороликов.</div>
+                <span class="android-version-badge">🤖 Android 4.4+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1MQLc1TxCYl4SCAqDVWbZUARWxPCR1LLd/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="app" data-android="4.0">
+            <div>
+                <div class="app-icon">🌐</div>
+                <div class="app-title">UK Mini</div>
+                <div class="app-desc">Классический, легкий интернет-браузер, оптимизированный под старые мобильные сети и экономный расход трафика.</div>
+                <span class="android-version-badge">🤖 Android 4.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1cNKq0QKKz1V7c828jEiwMWbqThLZ_ljQ/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="app" data-android="4.0">
+            <div>
+                <div class="app-icon">💡</div>
+                <div class="app-title">UK Браузер</div>
+                <div class="app-desc">Полноценная ретро-версия популярного мобильного браузера. Быстрый скроллинг, продвинутый менеджер загрузок и ночной режим чтения.</div>
+                <span class="android-version-badge">🤖 Android 4.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1ZZDFpMLyIOzLqWUCeu3M8mpgDfpQ782S/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА КИВИ БРАУЗЕР -->
+        <div class="app-card" data-type="app" data-android="5.0">
+            <div>
+                <div class="app-icon">
+                    <img src="https://kiwibrowser.com/assets/images/logo.png" alt="Kiwi Browser Logo">
+                </div>
+                <div class="app-title">Киви браузер</div>
+                <div class="app-desc">Уникальный мобильный браузер на движке Chromium, полюбившийся пользователям за полноценную поддержку десктопных расширений и блокировщиков.</div>
+                <span class="android-version-badge">🤖 Android 5.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1IKGBN7EzZlnZPlI93IlAH96yTbAJYvTF/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="app" data-android="4.1">
+            <div>
+                <div class="app-icon">⚡</div>
+                <div class="app-title">Chrome браузер</div>
+                <div class="app-desc">Один из самых популярных и стабильных браузеров для Android. Быстрая синхронизация вкладок, простой интерфейс и надежная работа.</div>
+                <span class="android-version-badge">🤖 Android 4.1+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/17u1DgWQgfb-hn3oAKX2voRvn8Jm5GG7f/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="app" data-android="5.0">
+            <div>
+                <div class="app-icon">🦁</div>
+                <div class="app-title">Brave браузер</div>
+                <div class="app-desc">Быстрый и приватный веб-браузер со встроенным щитом защиты. Автоматически блокирует навязчивую рекламу, трекеры и экономит батарею.</div>
+                <span class="android-version-badge">🤖 Android 5.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1GjlffSdVb-XLDqnruDFIjF9yJG-F-FB9/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА РАДИО КАЗАХСТАН -->
+        <div class="app-card" data-type="app" data-android="4.1">
+            <div>
+                <div class="app-icon">
+                    <img src="https://cdn.qazradio.fm/2022/11/11/1668153557592.jpeg" alt="Радио Казахстан Лого">
+                </div>
+                <div class="app-title">Радио Казахстан</div>
+                <div class="app-desc">Удобное приложение для прослушивания популярных казахстанских радиостанций в прямом эфире. Музыка, новости и любимые передачи всегда под рукой.</div>
+                <span class="android-version-badge">🤖 Android 4.1+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1SCSbmnQ_0pMslbnqaQcQMduJ_DIyZKhi/view?usp=drivesdk" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="game" data-android="2.2">
+            <div>
+                <div class="app-icon">🚗</div>
+                <div class="app-title">Hill Climb Racing</div>
+                <div class="app-desc">Легендарная физическая аркада! Управляйте Ньютоном Биллом в его путешествии по уникальным холмистым трассам. Модернизируйте авто, следите за топливом и делайте крутые трюки!</div>
+                <span class="android-version-badge">🤖 Android 2.2+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1FRLxZxWHAvqGoP1TgpNez609WwIjns3P/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="game" data-android="2.3">
+            <div>
+                <div class="app-icon">🏎️</div>
+                <div class="app-title">Aim Racing</div>
+                <div class="app-desc">Динамичный гоночный симулятор на speed и реакцию. Настраивайте чувствительность управления, обходите соперников на крутых поворотах и придите к финишу первым.</div>
+                <span class="android-version-badge">🤖 Android 2.3+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1GAQT125RYDRBh99LnRuodw3IwAgxGsBW/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- КАРТОЧКА ASPHALT NITRO 2 -->
+        <div class="app-card" data-type="game" data-android="4.4">
+            <div>
+                <div class="app-icon">
+                    <img src="https://vignette.wikia.nocookie.net/asphalt/images/d/df/Logo_square_minimal_n2.png" alt="Asphalt Nitro 2 Logo">
+                </div>
+                <div class="app-title">Asphalt Nitro 2</div>
+                <div class="app-desc">Продолжение гоночного хита от Gameloft. Крутые суперкары, прыжки с трамплинов, дрифт и безумное нитро в компактном размере!</div>
+                <span class="android-version-badge">🤖 Android 4.4+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1mNWlKLQIAbl7h7u2R8XbQnlNEyHjDZiJ/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="app" data-android="4.0">
+            <div>
+                <div class="app-icon">🌤️</div>
+                <div class="app-title">Gismeteo</div>
+                <div class="app-desc">Популярный погодный информер с точными метеоданными. Узнавайте температуру, скорость ветра и осадки на несколько дней вперёд через удобные ретро-виджеты.</div>
+                <span class="android-version-badge">🤖 Android 4.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1ExGdsStEO87vx3kw2Fwsvg9V74fj1TCf/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <div class="app-card" data-type="app" data-android="4.0">
+            <div>
+                <div class="app-icon">🗺️</div>
+                <div class="app-title">Google Карты</div>
+                <div class="app-desc">Классический навигатор для поиска мест и построения маршрутов. Просматривайте карты городов, отслеживайте пробки и находите нужные организации прямо в пути.</div>
+                <span class="android-version-badge">🤖 Android 4.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1e7Wra7gFxknOQoze6xzkCMeqCMdM_V84/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- KATE MOBILE -->
+        <div class="app-card" data-type="app" data-android="2.3">
+            <div>
+                <div class="app-icon">💙</div>
+                <div class="app-title">Kate Mobile</div>
+                <div class="app-desc">Легендарный альтернативный клиент для ВКонтакте. Любим пользователями за скорость работы, кастомизацию тем, режим «Невидимки» и экономию трафика.</div>
+                <span class="android-version-badge">🤖 Android 2.3+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1OShYS935lWke3WYlQTrLS2No9BlyAxw5/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- OPENVK -->
+        <div class="app-card" data-type="app" data-android="4.4">
+            <div>
+                <div class="app-icon">🌐</div>
+                <div class="app-title">openVk</div>
+                <div class="app-desc">Уникальный легковесный клиент, возвращающий дух старого доброго ВКонтакте («дуровского» периода). Простой интерфейс без лишней рекламы и тяжелых функций.</div>
+                <span class="android-version-badge">🤖 Android 4.4+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1nk3W85G0SEEcsgQBBPlKKnaqTGZe67-C/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- KUTEGRAM -->
+        <div class="app-card" data-type="app" data-android="5.0">
+            <div>
+                <div class="app-icon">✈️</div>
+                <div class="app-title">Kutegram</div>
+                <div class="app-desc">Экспериментальный сторонний клиент для сети Telegram, предлагающий уникальные настройки интерфейса и альтернативную логику работы с чатами.</div>
+                <span class="android-version-badge">🤖 Android 5.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1Vm-50GhVykFWaWAIex0aC-1Et5w3gZIC/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- TELEGRAM -->
+        <div class="app-card" data-type="app" data-android="4.1">
+            <div>
+                <div class="app-icon">💬</div>
+                <div class="app-title">Telegram</div>
+                <div class="app-desc">Официальная классическая версия мессенджера. Облачная синхронизация, каналы, группы и передача огромных файлов.</div>
+                <span class="android-version-badge">🤖 Android 4.1+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1oY1IG4_bsDLe0P6EwkC5LB8ZJd8YvNIP/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- TELEGRAM X -->
+        <div class="app-card" data-type="app" data-android="4.1">
+            <div>
+                <div class="app-icon">✖️</div>
+                <div class="app-title">Telegram X</div>
+                <div class="app-desc">Альтернативный клиент Telegram, написанный на TDLib. Отличается повышенной плавностью анимаций, переработанным интерфейсом и отличным быстродействием на слабых устройствах.</div>
+                <span class="android-version-badge">🤖 Android 4.1+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1QS94oov8q94G-DOf8DwZA-qSooTisznL/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+        <!-- NEKOGRAM -->
+        <div class="app-card" data-type="app" data-android="5.0">
+            <div>
+                <div class="app-icon">😸</div>
+                <div class="app-title">Nekogram</div>
+                <div class="app-desc">Продвинутый мод для Telegram с широким набором дополнительных функций. Встроенный переводчик сообщений, кастомные шрифты, стикеры и гибкие твики для гиков.</div>
+                <span class="android-version-badge">🤖 Android 5.0+</span>
+            </div>
+            <a href="https://drive.google.com/file/d/1QS94oov8q94G-DOf8DwZA-qSooTisznL/view?usp=sharing" target="_blank" class="download-btn">Скачать APK</a>
+        </div>
+
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <div class="modal-header" id="authModalTitle">ВХОД В СИСТЕМУ</div>
+            <div class="auth-form">
+                <div class="form-item full-width">
+                    <label for="authUsername">> Имя пользователя:</label>
+                    <input type="text" id="authUsername" autocomplete="off">
+                </div>
+                
+                <div class="form-item full-width" id="dynamicAuthField">
+                    <label for="authPassword">> Пароль доступа:</label>
+                    <input type="password" id="authPassword">
+                </div>
+
+                <div class="form-item full-width" id="confirmCodeContainer" style="display: none;">
+                    <label for="authConfirmCode">> Код подтверждения из письма:</label>
+                    <input type="text" id="authConfirmCode" maxlength="4" placeholder="Введите 4 цифры">
+                </div>
+            </div>
+
+            <div class="code-hint" id="codeHintBox"></div>
+
+            <div class="error-msg" id="authError">Неверное имя или пароль!</div>
+            <button class="submit-btn" id="authSubmitBtn">ВЫПОЛНИТЬ ВХОД</button>
+            <div class="switch-auth-mode" id="switchAuthBox">
+                Нет аккаунта? <span id="switchAuthBtn">Создать новый</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">РАСШИРЕННЫЕ НАСТРОЙКИ</div>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label for="themeSelect">> Цветовая схема:</label>
+                    <select id="themeSelect">
+                        <option value="green">Matrix Green</option>
+                        <option value="amber">Amber Neon</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="filterSelect">> Тип контента:</label>
+                    <select id="filterSelect">
+                        <option value="all">Все файлы</option>
+                        <option value="game">Только Игры</option>
+                        <option value="app">Приложения</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="androidSelect">> Версия Android:</label>
+                    <select id="androidSelect">
+                        <option value="all">Показать все</option>
+                        <option value="1.6">Android 1.6 и старше</option>
+                        <option value="2.3">Android 2.3 и старше</option>
+                        <option value="4.0">Android 4.0 и старше</option>
+                        <option value="4.4">Android 4.4 и старше</option>
+                        <option value="5.0">Android 5.0 и старше</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="gridSelect">> Вид каталога:</label>
+                    <select id="gridSelect">
+                        <option value="default">Стандартная сетка</option>
+                        <option value="large">Крупная сетка</option>
+                        <option value="compact">Компактный список</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="animSelect">> Эффекты/Анимация:</label>
+                    <select id="animSelect">
+                        <option value="on">Включены</option>
+                        <option value="off">Выключены (Быстро)</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="sortSelect">> Сортировка каталога:</label>
+                    <select id="sortSelect">
+                        <option value="default">По умолчанию</option>
+                        <option value="alpha">По алфавиту (А-Я)</option>
+                        <option value="shuffle">Случайный режим</option>
+                    </select>
+                </div>
+            </div>
+            <button class="close-modal-btn" id="closeSettingsBtn">Применить настройки</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Ретромаркет. Все права на файлы принадлежат их авторам.</p>
+    </footer>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const filterSelect = document.getElementById('filterSelect');
+        const androidSelect = document.getElementById('androidSelect');
+        const themeSelect = document.getElementById('themeSelect');
+        const gridSelect = document.getElementById('gridSelect');
+        const animSelect = document.getElementById('animSelect');
+        const sortSelect = document.getElementById('sortSelect');
+        
+        const settingsModal = document.getElementById('settingsModal');
+        const openSettingsBtn = document.getElementById('openSettingsBtn');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        const appsContainer = document.getElementById('appsContainer');
+
+        const authBtn = document.getElementById('authBtn');
+        const authModal = document.getElementById('authModal');
+        const authModalTitle = document.getElementById('authModalTitle');
+        const authUsernameInput = document.getElementById('authUsername');
+        const dynamicAuthField = document.getElementById('dynamicAuthField');
+        const confirmCodeContainer = document.getElementById('confirmCodeContainer');
+        const authConfirmCodeInput = document.getElementById('authConfirmCode');
+        const codeHintBox = document.getElementById('codeHintBox');
+        const authSubmitBtn = document.getElementById('authSubmitBtn');
+        const switchAuthBox = document.getElementById('switchAuthBox');
+        const authError = document.getElementById('authError');
+
+        const versionToggleBtn = document.getElementById('versionToggleBtn');
+        const viewportTag = document.getElementById('viewportTag');
+
+        function applyVersion(mode) {
+            if (mode === 'pc') {
+                document.body.classList.add('pc-version-active');
+                viewportTag.setAttribute('content', 'width=1200, initial-scale=0.3, maximum-scale=2.0, user-scalable=yes');
+                versionToggleBtn.innerHTML = '📱 Мобильная версия';
+            } else {
+                document.body.classList.remove('pc-version-active');
+                viewportTag.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                versionToggleBtn.innerHTML = '🖥️ Версия для ПК';
+            }
+        }
+
+        let savedVersionMode = localStorage.getItem('retro_version_mode') || 'mobile';
+        applyVersion(savedVersionMode);
+
+        versionToggleBtn.addEventListener('click', () => {
+            let currentMode = document.body.classList.contains('pc-version-active') ? 'pc' : 'mobile';
+            let newMode = currentMode === 'mobile' ? 'pc' : 'mobile';
+            localStorage.setItem('retro_version_mode', newMode);
+            applyVersion(newMode);
+        });
+
+        let isSignUpMode = false; 
+        let currentUser = localStorage.getItem('retro_current_user') || null;
+        let generatedCode = null;
+
+        function updateAuthButtonUI() {
+            if (currentUser) {
+                authBtn.innerHTML = `👤 ${currentUser} (Выйти)`;
+                authBtn.title = "Нажмите, чтобы выйти из аккаунта";
+            } else {
+                authBtn.innerHTML = `👤 Войти`;
+                authBtn.title = "";
+            }
+        }
+        updateAuthButtonUI();
+
+        authBtn.addEventListener('click', () => {
+            if (currentUser) {
+                localStorage.removeItem('retro_current_user');
+                currentUser = null;
+                updateAuthButtonUI();
+                alert("Вы вышли из своего аккаунта.");
+            } else {
+                isSignUpMode = false;
+                toggleAuthModeUI();
+                authError.style.display = "none";
+                authUsernameInput.value = "";
+                authModal.style.display = 'flex';
+            }
+        });
+
+        function toggleAuthModeUI() {
+            authError.style.display = "none";
+            codeHintBox.style.display = "none";
+            confirmCodeContainer.style.display = "none";
+            generatedCode = null;
+
+            if (isSignUpMode) {
+                authModalTitle.textContent = "REGISTRATION";
+                authSubmitBtn.textContent = "REGISTER";
+                
+                dynamicAuthField.innerHTML = `
+                    <label for="authEmail">> Email:</label>
+                    <input type="email" id="authEmail" placeholder="example@mail.com">
+                    <button type="button" class="send-code-btn" id="sendCodeBtn">Get verification code</button>
+                `;
+
+                document.getElementById('sendCodeBtn').addEventListener('click', simulateEmailCode);
+                switchAuthBox.innerHTML = `Already have an account? <span id='switchAuthBtn'>Log In</span>`;
+            } else {
+                authModalTitle.textContent = "LOG IN";
+                authSubmitBtn.textContent = "LOG IN";
+                
+                dynamicAuthField.innerHTML = `
+                    <label for="authPassword">> Password:</label>
+                    <input type="password" id="authPassword">
+                `;
+
+                switchAuthBox.innerHTML = `No account? <span id='switchAuthBtn'>Create new one</span>`;
+            }
+
+            document.getElementById('switchAuthBtn').addEventListener('click', () => {
+                isSignUpMode = !isSignUpMode;
+                toggleAuthModeUI();
+            });
+        }
+
+        function simulateEmailCode() {
+            const emailInput = document.getElementById('authEmail');
+            if (!emailInput || !emailInput.value.includes('@')) {
+                authError.textContent = "Provide a valid email address!";
+                authError.style.display = "block";
+                return;
+            }
+            authError.style.display = "none";
+
+            generatedCode = Math.floor(1000 + Math.random() * 9000).toString();
+            
+            codeHintBox.innerHTML = `✉️ Email sent to <strong>${emailInput.value}</strong>!<br>Code: <span style="color:#00ff00; font-size:1.2rem; font-weight:bold;">${generatedCode}</span>`;
+            codeHintBox.style.display = "block";
+
+            confirmCodeContainer.style.display = "block";
+            authConfirmCodeInput.value = "";
+        }
+
+        authSubmitBtn.addEventListener('click', () => {
+            const username = authUsernameInput.value.trim();
+
+            if (!username) {
+                authError.textContent = "Enter username!";
+                authError.style.display = "block";
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('retro_users')) || {};
+
+            if (isSignUpMode) {
+                const emailInput = document.getElementById('authEmail');
+                const userCode = authConfirmCodeInput.value.trim();
+
+                if (!emailInput || !emailInput.value.includes('@')) {
+                    authError.textContent = "Provide your email address first!";
+                    authError.style.display = "block";
+                    return;
+                }
+
+                if (!generatedCode) {
+                    authError.textContent = "Request verification code!";
+                    authError.style.display = "block";
+                    return;
+                }
+
+                if (userCode !== generatedCode) {
+                    authError.textContent = "Incorrect code!";
+                    authError.style.display = "block";
+                    return;
+                }
+
+                if (users[username]) {
+                    authError.textContent = "Username already taken!";
+                    authError.style.display = "block";
+                    return;
+                }
+
+                users[username] = "email_verified_" + emailInput.value;
+                localStorage.setItem('retro_users', JSON.stringify(users));
+                localStorage.setItem('retro_current_user', username);
+                currentUser = username;
+                
+                updateAuthButtonUI();
+                authModal.style.display = 'none';
+                alert(`Registration complete! Welcome, ${username}.`);
+
+            } else {
+                const passwordInput = document.getElementById('authPassword');
+                const password = passwordInput ? passwordInput.value : "";
+
+                if (users[username]) {
+                    if (users[username].startsWith("email_verified_") || users[username] === password) {
+                        localStorage.setItem('retro_current_user', username);
+                        currentUser = username;
+                        updateAuthButtonUI();
+                        authModal.style.display = 'none';
+                        return;
+                    }
+                }
+                authError.textContent = "Wrong username or password!";
+                authError.style.display = "block";
+            }
+        });
+
+        const originalOrder = Array.from(appsContainer.children);
+
+        openSettingsBtn.addEventListener('click', () => settingsModal.style.display = 'flex');
+        closeSettingsBtn.addEventListener('click', () => settingsModal.style.display = 'none');
+        
+        window.addEventListener('click', (e) => { 
+            if(e.target === settingsModal) settingsModal.style.display = 'none'; 
+            if(e.target === authModal) authModal.style.display = 'none'; 
+        });
+
+        function filterCards() {
+            let searchFilter = searchInput.value.toLowerCase();
+            let typeFilter = filterSelect.value;
+            let androidFilter = androidSelect.value;
+            let cards = document.querySelectorAll('.app-card');
+
+            cards.forEach(function(card) {
+                let title = card.querySelector('.app-title').textContent.toLowerCase();
+                let desc = card.querySelector('.app-desc').textContent.toLowerCase();
+                let cardType = card.getAttribute('data-type');
+                let cardAndroid = parseFloat(card.getAttribute('data-android')) || 0;
+
+                let matchesSearch = title.includes(searchFilter) || desc.includes(searchFilter);
+                let matchesType = (typeFilter === 'all') || (cardType === typeFilter);
+                
+                let matchesAndroid = true;
+                if (androidFilter !== 'all') {
+                    let maxAllowedAndroid = parseFloat(androidFilter);
+                    if (cardAndroid > maxAllowedAndroid) {
+                        matchesAndroid = false;
+                    }
+                }
+
+                if (matchesSearch && matchesType && matchesAndroid) {
+                    card.style.display = ""; 
+                } else {
+                    card.style.display = "none"; 
+                }
+            });
+        }
+
+        searchInput.addEventListener('input', filterCards);
+        filterSelect.addEventListener('change', filterCards);
+        androidSelect.addEventListener('change', filterCards);
+
+        themeSelect.addEventListener('change', function() {
+            if (this.value === 'amber') {
+                document.documentElement.setAttribute('data-theme', 'amber');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+        });
+
+        gridSelect.addEventListener('change', function() {
+            appsContainer.className = 'container'; 
+            if (this.value === 'large') appsContainer.classList.add('grid-large');
+            if (this.value === 'compact') appsContainer.classList.add('grid-compact');
+        });
+
+        animSelect.addEventListener('change', function() {
+            if (this.value === 'off') {
+                document.documentElement.setAttribute('data-animations', 'none');
+            } else {
+                document.documentElement.removeAttribute('data-animations');
+            }
+        });
+
+        sortSelect.addEventListener('change', function() {
+            let cardsArray = Array.from(appsContainer.children);
+
+            if (this.value === 'alpha') {
+                cardsArray.sort((a, b) => {
+                    let titleA = a.querySelector('.app-title').textContent.toUpperCase();
+                    let titleB = b.querySelector('.app-title').textContent.toUpperCase();
+                    return titleA.localeCompare(titleB, 'ru');
+                });
+            } else if (this.value === 'shuffle') {
+                cardsArray.sort(() => Math.random() - 0.5);
+            } else {
+                cardsArray = [...originalOrder];
+            }
+
+            cardsArray.forEach(card => appsContainer.appendChild(card));
+            filterCards(); 
+        });
+    </script>
+</body>
+</html>
